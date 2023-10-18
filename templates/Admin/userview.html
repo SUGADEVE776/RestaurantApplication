@@ -1,0 +1,20 @@
+{% extends "Admin/base.html" %}
+
+{% block title %}User Management - Your Website{% endblock %}
+
+{% block content %}
+    <h1>Users</h1>
+    <ul>
+        {% for u in userlist %}
+        <li>
+            <strong><a href="{{ u.id }}">{{ u.username }}</a></strong>
+            <ul>
+                <li>Name: {{ u.first_name }} {{ u.last_name }}</li>
+                <li>Email: {{ u.email }}</li>
+                <li>Date Joined: {{ u.date_joined }}</li>
+                <li>Last Login: {{ u.last_login }}</li>
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

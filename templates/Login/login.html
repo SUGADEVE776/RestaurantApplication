@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+
+        .container {
+            margin: 20px;
+        }
+
+        p {
+            font-size: 20px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Restaurant App</h1>
+
+    <div class="container">
+        <p>Select your login type:</p>
+        <button onclick="redirectToAdminLogin()">
+            Admin Login
+        </button>
+    </div>
+
+    <script>
+        
+        function redirectToAdminLogin() {
+            // Redirect to the admin login page
+            window.location.href = 'login_admin/'; // Replace with the actual admin login URL
+        }
+    </script>
+</body>
+</html>

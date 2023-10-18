@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Users</h1>
+    <ul>
+        {% for u in userlist %}
+        <li>
+            <strong>ID: {{ u.id }}</strong>
+            <ul>
+                <li>Name: {{ u.first_name }} {{ u.last_name }}</li>
+                <li>Email: {{ u.email }}</li>
+                <li>Date Joined: {{ u.date_joined }}</li>
+                <li>Last Login: {{ u.last_login }}</li>
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

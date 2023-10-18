@@ -1,0 +1,24 @@
+
+{% block content %}
+  <h2>Registration</h2>
+
+  <form method="post" action="">
+    {% csrf_token %}
+    
+    {% if step == "email" %}
+      <label for="email">Email:</label>
+      <input type="email" name="email" required>
+      <input type="submit" name="submit_email" value="Submit Email">
+    {% elif step == "otp" %}
+      <label for="otp">OTP:</label>
+      <input type="text" name="otp" maxlength="6" required>
+      <input type="submit" name="submit_otp" value="Submit OTP">
+    {% elif step == "password" %}
+      <label for="password1">Password:</label>
+      <input type="password" name="password1" required>
+      <label for="password2">Confirm Password:</label>
+      <input type="password" name="password2" required>
+      <input type="submit" name="submit_password" value="Submit Password">
+    {% endif %}
+  </form>
+{% endblock %}

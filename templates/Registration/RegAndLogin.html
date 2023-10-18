@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration and Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            margin: 0; /* Remove margin to align with the top of the page */
+        }
+
+        .container {
+            margin: 20px;
+        }
+
+        p {
+            font-size: 20px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Place the button in the top-right corner */
+        .admin-button-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgb(255, 255, 255);
+        }
+
+        .form-container {
+            display: none;
+            text-align: left;
+            margin: 20px auto;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .active-form {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Registration and Login</h1>
+    <div class="admin-button-container">
+        <a href="/login_admin/" class="button">Admin Login</a>
+    </div>
+
+    <div class="container">
+        <p>Select your action:</p>
+
+        <button onclick="showRegistrationForm()">
+            Register
+        </button>
+        <button onclick="showLoginForm()">
+            Login
+        </button>
+
+        <!-- Registration Form -->
+        <div id="registration-form" class="form-container active-form">
+            <h2>Register</h2>
+            <form method="post" >
+                {% csrf_token %}
+                {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                    <li> {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input type="text" name="first_name" id="first-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" name="last_name" id="last-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="password1">Password</label>
+                    <input type="password" name="password1" id="password1" required>
+                </div>
+                <div class="form-group">
+                    <label for="password2">Confirm Password</label>
+                    <input type="password" name="password2" id="password2" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form" class="form-container">
+            <h2>Login</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                    <li> {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+            <p><a href="/forgotmail/">Forgot Password?</a></p>
+            <p><a href="/forgotusername/">Forgot UserName?</a></p>
+        </div>
+        
+
+    <script>
+        function showRegistrationForm() {
+            document.getElementById('registration-form').classList.add('active-form');
+            document.getElementById('login-form').classList.remove('active-form');
+        }
+
+        function showLoginForm() {
+            document.getElementById('registration-form').classList.remove('active-form');
+            document.getElementById('login-form').classList.add('active-form');
+        }
+    </script>
+</body>
+</html>
