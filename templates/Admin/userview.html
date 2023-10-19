@@ -4,6 +4,7 @@
 
 {% block content %}
     <h1>Users</h1>
+    <a href="createuser/" class="btn btn-primary">Create New User</a> <!-- Assuming you use Django's URL handling -->
     <ul>
         {% for u in userlist %}
         <li>

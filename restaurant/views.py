@@ -241,6 +241,17 @@ def Edit_User(request):
 
     return render(request, 'Admin/useredit.html', {'form': form})
 
+def admin_user_create(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Redirect to a success page, login page, or any other desired page
+            return redirect('/admin_home/User/')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
 
 def email_send(emails, sub, bod):
     email_sender = "sugdev2000@gmail.com"
@@ -428,25 +439,33 @@ class RestaurantUpdateByAdmin(generic.UpdateView):
     fields = '__all__'
     success_url = reverse_lazy('restauran')
 
+class Restaurant_list_admin(generics.ListAPIView):
+    queryset = Restaurants.objects.all()
+    serializer_class = Restaurant_serializer
 
-def Restaurant_list_admin(request):
-    print(request.GET.getlist('request'))
-    all = Feedback.objects.all()
+    def list(self,request):
+        print(request.POST)
+        all_restaurants = self.get_queryset()
 
-    filter_Value = request.GET.get('rating')
+        filter_value = request.GET.get('rating')
+        location_filter = request.GET.get('location')
 
-    if filter_Value:
-        all = Feedback.objects.filter(rating__gt=float(filter_Value))
+        if filter_value:
+            all_restaurants = all_restaurants.filter(avg_rating__gt=float(filter_value))
 
-    if request.GET.getlist('request') == ['bookmark']:
-        user = request.user  # Assuming you're using authentication
-        all = Restaurants.objects.filter(bookmarks__user=user)
+        if location_filter:
+            all_restaurants = all_restaurants.filter(location__icontains=location_filter)
+        
 
-    p = Paginator(all, 5)
-    pages = request.GET.get('page')
-    all = p.get_page(pages)
+        # if request.GET.getlist('request') == ['bookmark']:
+        #     user = request.user  # Assuming you're using authentication
+        #     all = Restaurants.objects.filter(bookmarks__user=user)
 
-    return render(request, 'Admin/list_restaurant.html', {'restaurant_list': all})
+        p = Paginator(all_restaurants, 5)
+        pages = request.GET.get('page')
+        all_restaurants = p.get_page(pages)
+
+        return render(request, 'Admin/list_restaurant.html', {'restaurant_list': all_restaurants})
 
 
 class restaurant_by_location(APIView):
