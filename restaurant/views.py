@@ -608,18 +608,3 @@ class list_bookmarks(generics.ListAPIView):
 
 
 
-
-# class CombinedDataAPIView(APIView):
-#     def get(self, request, pk):
-#         reviews = Feedback.objects.filter(restaurant__id=pk).values('review', 'user_id')
-#         dishes = Dishes.objects.filter(restaurant__id=pk).values('name')
-
-#         reviews_serializer = Feedback_serializer(reviews, many=True)
-#         dishes_serializer = Dishes_serializer(dishes, many=True)
-
-#         combined_data = {
-#             'reviews': reviews_serializer.data,
-#             'dishes': dishes_serializer.data
-#         }
-
-#         return HttpResponse(combined_data)
