@@ -76,34 +76,7 @@ def Register_and_Login(request):
     return render(request, 'Registration/RegAndLogin.html', {'form': form})
 
 
-# def Register_User_API(request):
-#     if request.method == 'POST':
-#         print(request.POST)
-#         print(len(request.POST))
-#         form = CustomUserCreationForm(request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data['username']
-#             email = form.cleaned_data['email']
-#             firstname = form.cleaned_data['first_name']
-#             lastname= form.cleaned_data['last_name']
-#             password1 = form.cleaned_data['password1']
-#             password2 = form.cleaned_data['password2']
 
-#             print(username,email,firstname,lastname,password1,password2)
-
-#             if not User.objects.filter(username=username).exists() and not User.objects.filter(email=email).exists():
-#                 if password1 != password2:
-#                     return render(request, 'Registration/RegAndLogin.html', {'form': form, 'error_message': 'Password not matching'})
-#                 user = User.objects.create_user(username=username, email=email, password=password1,first_name=firstname,last_name=lastname)
-#                 messages.success(request, "Registration successful! You can now log in.")
-#                 # login(request, user)
-#                 return redirect('/register/')
-#             else:
-#                 return render(request, 'Registration/RegAndLogin.html', {'form': form, 'error_message': 'Username or email already exists.'})
-#     else:
-#         form = CustomUserCreationForm()
-
-#     return render(request, 'Registration/RegAndLogin.html', {'form': form})
 
 
 def login_admin(request):
@@ -246,18 +219,6 @@ def Bookmark_restaurant(request):
 
     return Response("Done")
 
-
-class list_bookmarks(generics.ListAPIView):
-    queryset = Restaurants.objects.all()
-    serializer_class = Restaurant_serializer
-
-    def list(self, request):
-        all = self.get_queryset()
-        user = request.user  # Assuming you're using authentication
-        bookmarked_restaurants = all.filter(bookmarks__user=user)
-
-        # Now, you can serialize the bookmarked restaurants to return them as a JSON response
-        return Response(bookmarked_restaurants)
 
 
 def Edit_User(request):
@@ -573,25 +534,6 @@ class RestaurantList(generics.ListAPIView):
 
         return render(request, 'Dashboard/restaurant_list.html', {'restaurant_list': all_restaurants})
 
-# class FeedbackUpdateView(UpdateView):
-#     model = Feedback
-#     template_name = 'Dashboard/edit_feedback.html'  # Create an HTML template for the edit form
-#     fields = ['rating', 'review']
-
-#     def form_valid(self,request, form):
-
-#         print(form)
-#         # Set the user to the currently logged-in user
-#         form.instance.user = self.request.user
-#         # Set the restaurant to the current restaurant (you'll need to pass the restaurant ID to the view)
-#         pk = self.kwargs['pk']  
-#         form.instance.restaurant = Restaurants.objects.get(pk=pk)
-#         return super().form_valid(form)
-
-
-# class Dish_Management(APIView):
-#     def get(self,request):
-
 
 class reviews_by_users(generics.ListAPIView):
     queryset = Feedback.objects.all()
@@ -623,17 +565,42 @@ class dishes_by_restaurants(generics.ListAPIView):
         return render(request, 'Dashboard/specific_restaurant.html', {'dishes': all})
 
 
-class CombinedDataAPIView(APIView):
-    def get(self, request, pk):
-        reviews = Feedback.objects.filter(restaurant__id=pk).values('review', 'user_id')
-        dishes = Dishes.objects.filter(restaurant__id=pk).values('name')
 
-        reviews_serializer = Feedback_serializer(reviews, many=True)
-        dishes_serializer = Dishes_serializer(dishes, many=True)
 
-        combined_data = {
-            'reviews': reviews_serializer.data,
-            'dishes': dishes_serializer.data
-        }
 
-        return HttpResponse(combined_data)
+class list_bookmarks(generics.ListAPIView):
+    serializer_class = Bookmark_serializer
+    
+
+    def get_queryset(self):
+        user = self.request.user
+        return Bookmarks.objects.filter(user=user).values('restaurant')
+
+    def list(self, request):
+        queryset = self.get_queryset()
+        print(queryset)
+        x = []
+        restaurant_ids = queryset.values_list('restaurant', flat=True)
+        restaurants = Restaurants.objects.filter(id__in=restaurant_ids)
+
+        for res in restaurants:
+            x.append(res.name)
+        return render(request, 'Dashboard/bookmarked_restaurants.html',{'bookmarks': x})
+
+
+
+
+# class CombinedDataAPIView(APIView):
+#     def get(self, request, pk):
+#         reviews = Feedback.objects.filter(restaurant__id=pk).values('review', 'user_id')
+#         dishes = Dishes.objects.filter(restaurant__id=pk).values('name')
+
+#         reviews_serializer = Feedback_serializer(reviews, many=True)
+#         dishes_serializer = Dishes_serializer(dishes, many=True)
+
+#         combined_data = {
+#             'reviews': reviews_serializer.data,
+#             'dishes': dishes_serializer.data
+#         }
+
+#         return HttpResponse(combined_data)

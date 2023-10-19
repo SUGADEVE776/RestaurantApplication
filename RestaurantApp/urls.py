@@ -48,7 +48,7 @@ urlpatterns = [
     # path('restaurant/<int:pk>', views.FeedbackUpdate),
     path('edit/', views.Edit_User),
     path('restaurant/bm/', views.Bookmark_restaurant),
-    path('sample/', views.list_bookmarks.as_view()),
+    path('restaurant/bookmarks/', views.list_bookmarks.as_view()),
     path('restaurant/comments/<int:pk>', views.reviews_by_users.as_view()),
     path('restaurant/dishes/<int:pk>', views.dishes_by_restaurants.as_view()),
     path('restaurant/dishes/',views.dishes_by_restaurants.as_view()), 
@@ -57,7 +57,7 @@ urlpatterns = [
     path('location/', views.restaurant_by_location.as_view()),
     path('whole/',views.RestaurantDetails.as_view()),
     path('whole/<int:pk>',views.RestaurantDetails.as_view()),
-    path('combine/<int:pk>', views.CombinedDataAPIView.as_view())
+    # path('combine/<int:pk>', views.CombinedDataAPIView.as_view())
     # path('sss/', views.RestaurantList.as_view(), name='restaurant-list'),
 
 

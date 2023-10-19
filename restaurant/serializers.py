@@ -19,20 +19,20 @@ class Feedback_serializer(serializers.ModelSerializer):
 class Restaurant_serializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurants
-        fields = '__all__'
-        depth = 1
+        fields = ('name','description','location','avg_rating')
+        
 
 
 class Bookmark_serializer(serializers.ModelSerializer):
     class Meta:
         model = Bookmarks
-        fields = '__all__'
+        fields = ('restaurant','user')
         depth = 1
 
 
-class Combined_Serializer(serializers.Serializer):
-    restaurant = Restaurant_serializer()
-    feedback = Feedback_serializer()
+# class Combined_Serializer(serializers.Serializer):
+#     restaurant = Restaurant_serializer()
+#     feedback = Feedback_serializer()
 
 
 class Dishes_serializer(serializers.ModelSerializer):
