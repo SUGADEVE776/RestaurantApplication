@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from restaurant import views
+from Bookings.views import *
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -25,6 +26,8 @@ router.register(r'Restaurant', views.RestaurantViewSet)
 router.register(r'feedback', views.FeedbackViewSet)
 router.register(r'bookmark', views.BookmarkViewSet)
 router.register(r'dishes', views.DishesViewSet)
+router.register(r'tables', Table_Available_Viewset)
+router.register(r'DishQuantity', views.DishQuantityViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,7 +35,7 @@ urlpatterns = [
     path('admin_home/', views.admin_home),
     path('register/', views.Register_and_Login),
     # path('restaurant/',views.Restaurant_API),
-    path('forgot/', views.forgot_password_phone),
+    # path('forgot/', views.forgot_password_phone),
     path('forgotmail/', views.forgot_password_email),
     # path('verify/', views.verify_email_otp),
     path('reset/', views.otp_validation_and_reset),
@@ -45,7 +48,7 @@ urlpatterns = [
     # path('list/', views.RestaurantListView.as_view()) 
     path('login_admin/', views.login_admin),
     path('restaurant/', views.RestaurantList.as_view(), name='restaurant-list'),
-    # path('restaurant/<int:pk>', views.FeedbackUpdate),
+    path('review/<int:pk>', views.FeedbackUpdateView.as_view()),
     path('admin_home/User/createuser/', views.admin_user_create),
     path('restaurant/bm/', views.Bookmark_restaurant),
     path('restaurant/bookmarks/', views.list_bookmarks.as_view()),
@@ -57,8 +60,25 @@ urlpatterns = [
     path('location/', views.restaurant_by_location.as_view()),
     path('whole/',views.RestaurantDetails.as_view()),
     path('whole/<int:pk>',views.RestaurantDetails.as_view()),
+    # path('example/', views.CustomAuthToken.as_view()),
     # path('combine/<int:pk>', views.CombinedDataAPIView.as_view())
     # path('sss/', views.RestaurantList.as_view(), name='restaurant-list'),
+    path('reg/', views.RegisterAPI.as_view()),
+    path('res/', views.RestaurantAPI.as_view()),
+    path('res/<int:pk>', views.RestaurantAPI.as_view()),
+    path('feed/', views.Feedback_RestaurantAPI.as_view()),
+    path('forgot/', views.Forgot_passwordAPI.as_view()),
+    path('otp/', views.Verify_otpAPI.as_view()),
+    path('verify/', views.Reset_PasswordAPI.as_view()),
+    path('bookmark/', views.Bookmark_restaurantAPI.as_view()),
+    path('login/', views.LoginAPI.as_view()),
+    path('dinein/', Dine_InAPI.as_view()),
+    path('addmoney/', views.Add_Money.as_view()),
+    path('cart/', views.Cart_API.as_view()),
+    path('checkout/', views.Checkout_API.as_view()),
+    path('payment/<int:pk>', views.Payment_API.as_view()),
+    path('scratch/', views.ScratchCard.as_view())
+
 
 
     
