@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.core.paginator import Paginator
 from rest_framework.response import Response
-
+from twilio.rest import Client
 from RestaurantApp import settings
 from .serializers import *
 from .models import *
@@ -67,8 +67,8 @@ class LoginAPI(APIView):
 
 class RestaurantAPI(APIView):
     def get(self, request, pk=None):
-        import pdb
-        pdb.set_trace()
+        # import pdb
+        # pdb.set_trace()
         rating = request.GET.get('rating')
         location = request.GET.get('location')
         features = request.GET.get('features')
@@ -98,7 +98,7 @@ class RestaurantAPI(APIView):
 
         if 'now' in request.GET:
             current_time = datetime.datetime.now().strftime('%H:%M:%S')
-            restaurant = Restaurants.objects.filter(opening_time__lte=current_time,closing_time__gte=current_time)
+            restaurant = Restaurants.objects.filter(opening_time__lte=current_time, closing_time__gte=current_time)
             serializer = Restaurant_serializer(restaurant, many=True)
             return Response(serializer.data)
 
@@ -206,11 +206,82 @@ class Forgot_passwordAPI(APIView):
         return Response({"message": "email sent successfull......"})
 
 
+
+class Forgot_usernameAPI(APIView):
+    def post(self, request):
+        import pdb
+        pdb.set_trace()
+        email_id = request.data['email']
+
+        try:
+            user = User.objects.get(email=email_id)
+            otp = random.randrange(100000, 999999)
+            save_otp = OneTimePassword.objects.create(user=user, otp=otp)
+
+            print(otp, "otp")
+            sub = "OTP for Verification"
+            message = f"""Greetings from Restaurant App
+
+            Hello there! We're here to assist you with Finding Username for your Restaurant App account.
+
+            To Find your Username, you will need to verify your identity by entering the following OTP (One-Time Password):
+
+            OTP for find your Username: {otp}
+
+
+            Best regards,
+            The Restaurant App Team
+            """
+
+            email_send(emails=email_id, sub=sub, bod=message)
+        except:
+            return Response({"message": "email not found"}, status=403)
+
+        return Response({"message": "email sent successfull......"})
+
+
+
+class Know_UsernameAPI(APIView):
+    def post(self, request):
+        import pdb
+        pdb.set_trace()
+        try:
+            user = User.objects.get(email=request.data['email'])
+            obj = OneTimePassword.objects.filter(user=user).last()
+            if obj.otp == int(request.data['otp']):
+                obj.delete()
+                username = user.username
+                sub = "Your Username"
+                message = f"""Greetings from Restaurant App
+
+                            Hello there! We're here to assist you with Finding Username for your Restaurant App account.
+
+                            
+
+                            Your UserName is : {username}
+
+
+                            Best regards,
+                            The Restaurant App Team
+                            """
+
+                email_send(emails=request.data['email'], sub=sub, bod=message)
+
+                return Response({"message": "otp verified"})
+            else:
+                return Response({"message": "wrong otp"}, status=403)
+
+        except:
+            return Response({"message": "otp not exist"}, status=403)
+
+class Forgot_PasswordMobileAPI(APIView):
+    def post(self, request):
+        mobile = request.data['mobile']
+
+
 class Verify_otpAPI(APIView):
     def post(self, request):
         try:
-            # import pdb
-            # pdb.set_trace()
             user = User.objects.get(email=request.data['email'])
             obj = OneTimePassword.objects.filter(user=user).last()
             if obj.otp == int(request.data['otp']):
@@ -320,8 +391,6 @@ razorpay_client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KE
 
 class PaymentsAPI(APIView):
     def post(self, request, pk):
-        import pdb
-        pdb.set_trace()
         currency = 'INR'
 
         # Retrieve the total cost from the Checkout model for the given cart pk
@@ -354,6 +423,8 @@ class PaymentsAPI(APIView):
         return render(request, 'razorpay/index.html', context)
 
 
+
+
 class Payment_API(APIView):
     def post(self, request, pk):
         import pdb
@@ -362,7 +433,8 @@ class Payment_API(APIView):
         #     "cart": 3,
         #     "amount": 1112
         # }
-        total = (Checkout.objects.get(cart=pk)).total_cost
+        checkout = Checkout.objects.get(cart=pk)
+        total = checkout.total_cost
         address_id = (Checkout.objects.get(cart=pk)).delivery_address_id
         address = User_Address.objects.get(id=address_id)
         if request.data['amount'] == total:
@@ -381,9 +453,10 @@ class Payment_API(APIView):
 
             )
             cart_items = Cart_Items.objects.filter(cart=pk)
-            checkout = Checkout.objects.filter(cart=pk)
             cart_items.delete()
             checkout.delete()
+            coupon = Offers.objects.get(id=checkout.applied_coupon.id)
+            coupon.delete()
 
             return Response({"message": "Payment Sucessful, Order Placed"})
 
@@ -447,6 +520,23 @@ class DishQuantityViewSet(viewsets.ModelViewSet):
     serializer_class = Dish_Quantity_serializer
 
 
+class PromotionMessageAPI(APIView):
+    def post(self, request):
+        import pdb
+        pdb.set_trace()
+        account_sid = 'ACe94957dac13def6b7d6f8ea4504c1f33'
+        auth_token = 'eebea542ed265d2e00ca3f10e7632f39'
+        client = Client(account_sid, auth_token)
+
+        message = client.messages.create(
+            from_='+12295750677',
+            body="Excited for tomorrow's game against Pakistan. Book your hotels and Enjoy your Match with your family or friends. Book Now : http://127.0.0.1:8000/res/?features=Cricket Live Screening",
+            to='+918778118547'
+        )
+
+        print(message.sid)
+
+        return Response({"Message" : "Sucess"})
 
 
 def admin_home(request):
@@ -904,9 +994,6 @@ class RestaurantDetails(APIView):
         }
         return Response(all)
         # return render(request, 'Dashboard/restaurant_list.html',{'restaurants' : all})
-
-
-
 
 
 class RestaurantList(generics.ListAPIView):

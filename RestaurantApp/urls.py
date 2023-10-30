@@ -70,14 +70,17 @@ urlpatterns = [
     path('forgot/', views.Forgot_passwordAPI.as_view()),
     path('otp/', views.Verify_otpAPI.as_view()),
     path('verify/', views.Reset_PasswordAPI.as_view()),
+    path('forgotuser/', views.Forgot_usernameAPI.as_view()),
+    path('knowuser/', views.Know_UsernameAPI.as_view()),
     path('bookmark/', views.Bookmark_restaurantAPI.as_view()),
     path('login/', views.LoginAPI.as_view()),
     path('dinein/', Dine_InAPI.as_view()),
     path('addmoney/', views.Add_Money.as_view()),
     path('cart/', views.Cart_API.as_view()),
     path('checkout/', views.Checkout_API.as_view()),
-    path('payment/<int:pk>', views.Payment_API.as_view()),
-    path('scratch/', views.ScratchCard.as_view())
+    path('payment/<int:pk>', views.PaymentsAPI.as_view()),
+    path('scratch/', views.ScratchCard.as_view()),
+    path('promosms/', views.PromotionMessageAPI.as_view())
 
 
 
