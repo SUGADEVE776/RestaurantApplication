@@ -3,6 +3,15 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 
+
+class Mobile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    mobile_number = models.CharField(max_length=20,null=True,blank=True)
+
+    def __str__(self):
+        return self.user.username + " -- " + self.mobile_number
+
+
 # Create your models here.
 class RestaurantFeature(models.Model):
     name = models.CharField(max_length=50)
@@ -67,6 +76,7 @@ class Dish_Quantity(models.Model):
     dish = models.ForeignKey(Dishes, on_delete=models.CASCADE)
     price = models.IntegerField()
     quantity = models.IntegerField()
+    avg_rating = models.DecimalField(max_digits=3, decimal_places=1, default=0.0)
 
     def __str__(self):
         return f"{self.restaurant} - {self.dish}"
@@ -88,17 +98,14 @@ class Feedback(models.Model):
         return self.restaurant.name
 
 
-class Dish_Feedback(models.Model):
+class Dishes_Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    dish = models.ForeignKey(Dish_Quantity, on_delete=models.CASCADE)
     rating = models.DecimalField(max_digits=3, decimal_places=1)
     review = models.TextField()
-    dish = models.ForeignKey(Dishes, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (
-            ('user', 'rating', 'review'), ('user', 'rating'), ('user', 'review'), ('rating', 'user'),
-            ('rating', 'review'), ('review', 'user'),
-            ('review', 'rating'), ('user',), ('rating',), ('review',))
+        unique_together = (('user', 'dish'),)
 
 
 class Bookmarks(models.Model):

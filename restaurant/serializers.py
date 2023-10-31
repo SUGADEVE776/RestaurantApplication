@@ -42,6 +42,12 @@ class Dish_Quantity_serializer(serializers.ModelSerializer):
         # depth = 1
 
 
+class Dishes_Feedback_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dishes_Feedback
+        fields = '__all__'
+
+
 class Register_serializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 

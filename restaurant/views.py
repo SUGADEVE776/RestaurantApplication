@@ -2,7 +2,7 @@ import datetime
 import random
 from django.db.models import Avg
 # from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-# from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
@@ -108,7 +108,20 @@ class RestaurantAPI(APIView):
             return Response(serializer.data)
 
 
+class Restaurant_Admin_API(APIView):
+    def post(self,request):
+        data = request.data
+        serializer = Restaurant_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors)
+
+        return Response(serializer.data)
+
+
 class Feedback_RestaurantAPI(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get(self, request):
         feedback = Feedback.objects.all()
         serializer = Feedback_serializer(feedback, many=True)
@@ -138,6 +151,37 @@ class Feedback_RestaurantAPI(APIView):
 
         return Response(serializer.errors)
 
+
+
+class Feedback_DishAPI(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    def get(self, request):
+        feedback = Dishes_Feedback.objects.all()
+        serializer =Dishes_Feedback_Serializer(feedback, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = request.data
+        serializer = Dishes_Feedback_Serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            avg = Dishes_Feedback.objects.filter(dish=data['dish']).aggregate(Avg('rating'))['rating__avg']
+            avg = round(avg, 1)
+            res = Dish_Quantity.objects.get(id=data['dish'])
+            res.avg_rating = avg
+            res.save()
+        else:
+            return Response(serializer.errors)
+
+        return Response(serializer.data)
+
+    def patch(self, request, pk, format=None):
+        old_data = Dishes_Feedback.objects.filter(id=pk)
+        serializer = Dishes_Feedback_Serializer(old_data, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
 
 def email_send(emails, sub, bod):
     email_sender = "sugdev2000@gmail.com"
@@ -272,11 +316,31 @@ class Know_UsernameAPI(APIView):
                 return Response({"message": "wrong otp"}, status=403)
 
         except:
-            return Response({"message": "otp not exist"}, status=403)
+            return Response({"message": "otp not exist"}, status=status.H)
 
 class Forgot_PasswordMobileAPI(APIView):
     def post(self, request):
-        mobile = request.data['mobile']
+        import pdb
+        pdb.set_trace()
+        user = User.objects.get(email=request.data['email'])
+        mobile_no = Mobile.objects.get(user=user).mobile_number
+
+        account_sid = 'ACe94957dac13def6b7d6f8ea4504c1f33'
+        auth_token = '3d552140d968a63e046bf8bec4e36959'
+        client = Client(account_sid, auth_token)
+
+        otp = random.randrange(100000, 999999)
+        save_otp = OneTimePassword.objects.create(user=user, otp=otp)
+
+        message = client.messages.create(
+            from_='+12295750677',
+            body=f"Your OTP for Changing password is R-{otp}",
+            to=mobile_no
+        )
+
+        print(message.sid)
+
+        return Response({"Message": "Sucess"})
 
 
 class Verify_otpAPI(APIView):
